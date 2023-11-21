@@ -27,8 +27,9 @@ class QuranViewModel : ViewModel() {
                     Log.i("QuranViewModel", "onResponse: ${response.body()}")
                     _listSurah.postValue(response.body())
                 } else Log.e(
-                    "QuranViewMogel",
-                    "onResponse: Call error with Http status code " + response.code())
+                    "QuranViewModel",
+                    "onResponse: Call error with Http status code " + response.code()
+                )
             }
 
             override fun onFailure(call: Call<SurahResponse>, t: Throwable) {
@@ -44,7 +45,8 @@ class QuranViewModel : ViewModel() {
                     Log.i("QuranViewModel", "onResponse: ${response.body()}")
                 } else Log.e(
                     "QuranViewModel",
-                    "onResponse: Call error with Http status code " + response.code())
+                    "onResponse: Call error with Http status code " + response.code()
+                )
             }
 
             override fun onFailure(call: Call<AyahResponse>, t: Throwable) {

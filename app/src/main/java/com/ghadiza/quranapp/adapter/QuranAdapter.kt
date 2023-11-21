@@ -1,10 +1,12 @@
 package com.ghadiza.quranapp.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ghadiza.quranapp.databinding.ItemSurahBinding
 import com.ghadiza.quranapp.network.quran.SurahItem
+import com.ghadiza.quranapp.presentation.quran.DetailSurahActivity
 
 class QuranAdapter: RecyclerView.Adapter<QuranAdapter.SurahViewHolder>() {
     class SurahViewHolder(val binding: ItemSurahBinding) : RecyclerView.ViewHolder(binding.root)
@@ -33,7 +35,12 @@ class QuranAdapter: RecyclerView.Adapter<QuranAdapter.SurahViewHolder>() {
             tvAyah.text = resultOfAyah
             tvName.text = data.name
             tvNumber.text = data.number.toString()
+
+            this.root.setOnClickListener {
+                val intent = Intent(it.context, DetailSurahActivity::class.java)
+                intent.putExtra(DetailSurahActivity.EXTRA_DATA, data)
+                it.context.startActivity(intent)
+            }
         }
     }
-
 }
