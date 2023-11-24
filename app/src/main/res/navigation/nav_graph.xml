@@ -12,12 +12,6 @@
         tools:layout="@layout/fragment_quran" />
 
     <fragment
-        android:id="@+id/nav_doa"
-        android:name="com.ghadiza.quranapp.presentation.doa.DoaFragment"
-        android:label="@string/doa"
-        tools:layout="@layout/fragment_doa" />
-
-    <fragment
         android:id="@+id/nav_adzan"
         android:name="com.ghadiza.quranapp.presentation.adzan.AdzanFragment"
         android:label="@string/adzan"

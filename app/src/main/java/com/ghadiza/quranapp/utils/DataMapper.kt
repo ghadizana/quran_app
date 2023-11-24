@@ -1,6 +1,9 @@
 package com.ghadiza.quranapp.utils
 
+import com.ghadiza.quranapp.network.adzan.City
 import com.ghadiza.quranapp.network.adzan.CityItem
+import com.ghadiza.quranapp.network.adzan.DailyAdzan
+import com.ghadiza.quranapp.network.adzan.JadwalItem
 import com.ghadiza.quranapp.network.quran.Ayah
 import com.ghadiza.quranapp.network.quran.AyahsItem
 import com.ghadiza.quranapp.network.quran.QuranEdition
@@ -11,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 object DataMapper {
-    @JvmName("mapListAyahResponseToDomain")
+    @JvmName("mapSurahResponseToDomain")
     fun mapResponseToDomain(input: List<SurahItem>): Flow<List<Surah>> {
         val listSurah = ArrayList<Surah>()
         input.map {
@@ -71,5 +74,22 @@ object DataMapper {
             listCity.add(city)
         }
         return flowOf(listCity)
+    }
+
+    @JvmName("mapDailyResponseToDomain")
+    fun mapResponseToDomain(input: JadwalItem): Flow<DailyAdzan> {
+        val dailyAdzan = DailyAdzan(
+            date = input.date,
+            imsak = input.imsak,
+            isya = input.isya,
+            dzuhur = input.dzuhur,
+            subuh = input.subuh,
+            dhuha = input.dhuha,
+            terbit = input.terbit,
+            tanggal = input.tanggal,
+            ashar = input.ashar,
+            maghrib = input.maghrib
+        )
+        return flowOf(dailyAdzan)
     }
 }

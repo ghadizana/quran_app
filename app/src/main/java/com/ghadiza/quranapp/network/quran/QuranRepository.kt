@@ -1,6 +1,5 @@
 package com.ghadiza.quranapp.network.quran
 
-import android.provider.ContactsContract.Data
 import com.ghadiza.quranapp.network.NetworkBoundResource
 import com.ghadiza.quranapp.network.NetworkResponse
 import com.ghadiza.quranapp.network.RemoteDataSource

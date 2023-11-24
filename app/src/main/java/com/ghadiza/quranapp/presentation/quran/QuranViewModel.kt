@@ -4,54 +4,23 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.ghadiza.quranapp.network.ApiConfig
 import com.ghadiza.quranapp.network.quran.AyahResponse
+import com.ghadiza.quranapp.network.quran.QuranRepository
 import com.ghadiza.quranapp.network.quran.SurahResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class QuranViewModel : ViewModel() {
-    private val _listSurah = MutableLiveData<SurahResponse>()
+class QuranViewModel(private val quranRepository: QuranRepository) : ViewModel() {
+    fun getListSurah() =
+        quranRepository
+            .getListSurah()
+            .asLiveData()
 
-    val listSurah get() = _listSurah as LiveData<SurahResponse>
-
-    private val _listAyah = MutableLiveData<AyahResponse>()
-
-    val listAyah get() = _listAyah as LiveData<AyahResponse>
-
-    fun getListSurah() {
-        ApiConfig.getQuranService.getListSurah().enqueue(object : Callback<SurahResponse>{
-            override fun onResponse(call: Call<SurahResponse>, response: Response<SurahResponse>) {
-                if (response.isSuccessful) {
-                    Log.i("QuranViewModel", "onResponse: ${response.body()}")
-                    _listSurah.postValue(response.body())
-                } else Log.e(
-                    "QuranViewModel",
-                    "onResponse: Call error with Http status code " + response.code()
-                )
-            }
-
-            override fun onFailure(call: Call<SurahResponse>, t: Throwable) {
-                Log.e("QuranViewModel", "onFailure: " + t.localizedMessage)
-            }
-        })
-    }
-
-    fun getListAyah(number: Int) {
-        ApiConfig.getQuranService.getListAyahBySurah(number).enqueue(object : Callback<AyahResponse> {
-            override fun onResponse(call: Call<AyahResponse>, response: Response<AyahResponse>) {
-                if (response.isSuccessful) {
-                    Log.i("QuranViewModel", "onResponse: ${response.body()}")
-                } else Log.e(
-                    "QuranViewModel",
-                    "onResponse: Call error with Http status code " + response.code()
-                )
-            }
-
-            override fun onFailure(call: Call<AyahResponse>, t: Throwable) {
-                Log.e("QuranViewModel", "onFailure: " + t.localizedMessage)
-            }
-        })
-    }
+    fun getDetailSurahWithQuranEdition(number: Int) =
+        quranRepository
+            .getDetailSurahWithQuranEditions(number)
+            .asLiveData()
 }

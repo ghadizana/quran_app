@@ -1,20 +1,23 @@
 package com.ghadiza.quranapp.presentation.quran
 
+import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.nfc.NfcAdapter.EXTRA_DATA
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.ViewModelFactoryDsl
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ghadiza.quranapp.R
+import com.ghadiza.quranapp.ViewModelFactory
 import com.ghadiza.quranapp.adapter.SurahAdapter
 import com.ghadiza.quranapp.databinding.ActivityDetailSurahBinding
+import com.ghadiza.quranapp.databinding.CustomViewAlertDialogBinding
 import com.ghadiza.quranapp.network.Resource
 import com.ghadiza.quranapp.network.quran.Ayah
 import com.ghadiza.quranapp.network.quran.Surah
-import com.ghadiza.quranapp.network.quran.SurahItem
 
 class DetailSurahActivity : AppCompatActivity() {
     private var _binding: ActivityDetailSurahBinding? = null
@@ -26,14 +29,18 @@ class DetailSurahActivity : AppCompatActivity() {
     private var _mediaPlayer: MediaPlayer? = null
     private val mediaPlayer get() = _mediaPlayer as MediaPlayer
 
-    private var quranViewModel: QuranViewModel by viewModels { ViewModelFactory(this) }
+    private val quranViewModel: QuranViewModel by viewModels { ViewModelFactory(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityDetailSurahBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        _surah = intent.getParcelableExtra(EXTRA_DATA, Surah::class.java)
+        @Suppress("DEPRECATION")
+        _surah = when {
+            Build.VERSION.SDK_INT >= 33 -> intent.getParcelableExtra(EXTRA_DATA, Surah::class.java)
+            else -> intent.getParcelableExtra(EXTRA_DATA)
+        }
 
         initView()
 
@@ -72,11 +79,68 @@ class DetailSurahActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         binding.apply {
             if (isLoading) {
-                progressBar
+                progressBar.visibility = View.VISIBLE
+                cvDetailSurah.visibility = View.GONE
+                rvSurah.visibility = View.GONE
+            } else {
+                progressBar.visibility = View.GONE
+                cvDetailSurah.visibility = View.VISIBLE
+                rvSurah.visibility = View.VISIBLE
             }
         }
     }
 
+    private fun initView() {
+        binding.apply {
+            val revelationType = surah.revelationType
+            val numberOfAyahs = surah.numberOfAyahs
+            val resultOfAyah = "$revelationType - $numberOfAyahs Ayahs"
+            tvDetailAyah.text = resultOfAyah
+            tvDetailName.text = surah.name
+            tvDetailSurah.text = surah.englishName
+            tvDetailNameTranslation.text = surah.englishNameTranslation
+        }
+    }
+
+    private fun showCustomAlertDialog(dataAudio: Ayah, surah: Surah) {
+        _mediaPlayer = MediaPlayer()
+        val builder = AlertDialog.Builder(this, R.style.CustomAlertDialog).create()
+        val view = CustomViewAlertDialogBinding.inflate(layoutInflater)
+        builder.setView(view.root)
+        view.apply {
+            tvSurah.text = surah.englishName
+            tvName.text = surah.name
+            val numberInSurah = dataAudio.numberInSurah
+            val resultNumberText = "Ayah $numberInSurah"
+            tvNumberAyah.text = resultNumberText
+        }
+        view.btnPlay.setOnClickListener {
+            it.isEnabled = false
+            view.btnPlay.text = R.string.playing_audio.toString()
+            mediaPlayer.setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            try {
+                mediaPlayer.setDataSource(dataAudio.audio)
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        view.btnCancel.setOnClickListener {
+            mediaPlayer.stop()
+            builder.dismiss()
+        }
+        builder.setCanceledOnTouchOutside(false)
+        builder.show()
+        mediaPlayer.setOnCompletionListener {
+            builder.dismiss()
+        }
+    }
 
     companion object {
         const val EXTRA_DATA = "number"

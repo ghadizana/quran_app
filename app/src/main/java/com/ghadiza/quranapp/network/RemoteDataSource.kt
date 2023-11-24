@@ -3,6 +3,7 @@ package com.ghadiza.quranapp.network
 import android.util.Log
 import com.ghadiza.quranapp.network.adzan.AdzanApiService
 import com.ghadiza.quranapp.network.adzan.CityItem
+import com.ghadiza.quranapp.network.adzan.JadwalItem
 import com.ghadiza.quranapp.network.quran.QuranApiService
 import com.ghadiza.quranapp.network.quran.QuranEditionItem
 import com.ghadiza.quranapp.network.quran.SurahItem
@@ -52,6 +53,26 @@ class RemoteDataSource(
                 val cityResponse = adzanApiService.searchCity(city)
                 val listCity = cityResponse.dataCity
                 emit(NetworkResponse.Success(listCity))
+            } catch (e: Exception) {
+                emit(NetworkResponse.Error(e.toString()))
+                Log.e(
+                    RemoteDataSource::class.java.simpleName,
+                    "getListCity: " + e.localizedMessage
+                )
+            }
+        }.flowOn(Dispatchers.IO)
+
+    suspend fun getDailyAdzanTime(
+        id: String,
+        year: String,
+        month: String,
+        date: String
+    ): Flow<NetworkResponse<JadwalItem>> =
+        flow {
+            try {
+                val dailyResponse = adzanApiService.getDailyAdzanTime(id, year, month, date)
+                val dailyAdzanTime = dailyResponse.dailyData.jadwalItem
+                emit(NetworkResponse.Success(dailyAdzanTime))
             } catch (e: Exception) {
                 emit(NetworkResponse.Error(e.toString()))
                 Log.e(

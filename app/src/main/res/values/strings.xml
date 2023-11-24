@@ -2,7 +2,6 @@
     <string name="app_name">Quran App</string>
     <string name="adzan">Adzan</string>
     <string name="quran">Quran</string>
-    <string name="doa">Doa</string>
     <string name="play_audio">Play Audio</string>
     <string name="pause_audio">Pause Audio</string>
     <string name="playing_audio">Playing Audio</string>

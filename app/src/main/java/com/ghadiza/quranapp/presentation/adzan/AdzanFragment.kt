@@ -1,60 +1,85 @@
 package com.ghadiza.quranapp.presentation.adzan
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.viewModels
 import com.ghadiza.quranapp.R
+import com.ghadiza.quranapp.ViewModelFactory
+import com.ghadiza.quranapp.databinding.FragmentAdzanBinding
+import com.ghadiza.quranapp.network.Resource
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AdzanFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AdzanFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentAdzanBinding? = null
+    private val binding get() = _binding as FragmentAdzanBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private val adzanViewModel: AdzanViewModel by viewModels { ViewModelFactory(requireContext()) }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAdzanBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        adzanViewModel.getDailyAdzanTime().observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Loading -> {}
+                is Resource.Success -> {
+                    binding.apply {
+                        it.data?.let { adzanDataResult ->
+                            tvLocation.text = adzanDataResult.listLocation[1]
+                            tvDate.text =adzanDataResult.listCalendar[3]
+                        }
+                    }
+                    when (val adzanTime = it.data?.dailyAdzan) {
+                        is Resource.Loading -> {}
+                        is Resource.Success -> {
+                            binding.apply {
+                                adzanTime.data?.let { time ->
+                                    tvTimeImsak.text = time.imsak
+                                    tvTimeSubuh.text = time.subuh
+                                    tvTimeDzuhur.text= time.dzuhur
+                                    tvTimeAshar.text = time.ashar
+                                    tvTimeMaghrib.text = time.maghrib
+                                    tvTimeIsya.text= time.isya
+                                }
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            Log.e("AdzanFragment", "error getting schedule: ${adzanTime.message}",)
+                            Toast.makeText(context, "Error: ${adzanTime.message}", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            Log.e("AdzanFragment", "error getting location: ${it.message}",)
+                            Toast.makeText(context, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                is Resource.Error -> {
+                    Log.e(
+                        "AdzanFragment",
+                        "error observing AdzanViewModel: ${it.message}",
+                    )
+                    Toast.makeText(context, "Error: ${it.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_adzan, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AdzanFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AdzanFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

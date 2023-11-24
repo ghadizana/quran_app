@@ -5,15 +5,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ghadiza.quranapp.databinding.ItemSurahBinding
+import com.ghadiza.quranapp.network.quran.Surah
 import com.ghadiza.quranapp.network.quran.SurahItem
 import com.ghadiza.quranapp.presentation.quran.DetailSurahActivity
 
 class QuranAdapter: RecyclerView.Adapter<QuranAdapter.SurahViewHolder>() {
     class SurahViewHolder(val binding: ItemSurahBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private val listSurah = ArrayList<SurahItem>()
+    private val listSurah = ArrayList<Surah>()
 
-    fun setData(list: List<SurahItem>?) {
+    fun setData(list: List<Surah>?) {
         if (list == null) return
         listSurah.clear()
         listSurah.addAll(list)
@@ -25,7 +26,7 @@ class QuranAdapter: RecyclerView.Adapter<QuranAdapter.SurahViewHolder>() {
 
     override fun getItemCount(): Int = listSurah.size
 
-    override fun onBindViewHolder(holder: QuranAdapter.SurahViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SurahViewHolder, position: Int) {
         val data = listSurah[position]
         holder.binding.apply {
             tvSurah.text = data.englishName
