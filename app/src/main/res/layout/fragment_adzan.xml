@@ -256,8 +256,8 @@
                 android:text="@string/isya"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@id/tv_isya"
-                app:layout_constraintEnd_toStartOf="@id/guide_end" />
+                app:layout_constraintStart_toStartOf="@id/guide_start"
+                app:layout_constraintTop_toBottomOf="@id/line_maghrib" />
             
             <TextView
                 android:id="@+id/tv_time_isya"

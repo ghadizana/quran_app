@@ -20,13 +20,13 @@ class LocationPreferences(val context: Context) {
         val lastKnownLocation = MutableLiveData<List<String>>()
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             val geocoder = Geocoder(context, Locale.getDefault())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= 33) {
                 geocoder.getFromLocation(
                     location.latitude,
                     location.longitude,
                     1
-                ) {
-                    listAddress ->
+                ) { listAddress ->
+                    // Provide data for search city
                     val city = listAddress[0].subAdminArea
                     val cityListName = city.split(" ")
 
@@ -38,17 +38,45 @@ class LocationPreferences(val context: Context) {
                         "en" -> getNameOfCity(cityListName, true)
                         else -> "Jakarta"
                     }
-                    Log.i("LocalPref", "City Name: $resultOfCity")
+                    Log.i("LocPref", "City Name: $resultOfCity")
 
                     val subLocality = listAddress[0].subLocality
                     val locality = listAddress[0].locality
                     val address = "$subLocality, $locality"
                     Log.i("LocPref", "Address: $address")
 
-                    val listCity = listOf(resultOfCity, address)
-                    Log.i("LocPref", "getLastKnownLocation: $listCity")
-                    lastKnownLocation.postValue(listCity)
+                    val listyCity = listOf(resultOfCity, address)
+                    Log.i("LocPref", "getLastKnownLocation: $listyCity")
+                    lastKnownLocation.postValue(listyCity)
                 }
+            } else {
+                // Provide data for search city
+                val listAddress = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                val city = listAddress?.get(0)?.subAdminArea
+                val cityListName = city?.split(" ")
+
+                val currentLanguage = Locale.getDefault().language
+                Log.i("LocPref", "currentLanguage: $currentLanguage")
+
+                val resultOfCity = if (cityListName != null) {
+                    when (currentLanguage) {
+                        "in" -> getNameOfCity(cityListName, false)
+                        "en" -> getNameOfCity(cityListName, true)
+                        else -> "Jakarta"
+                    }
+                } else {
+                    "Jakarta"
+                }
+                Log.i("LocPref", "City Name: $resultOfCity")
+
+                val subLocality = listAddress?.get(0)?.subLocality
+                val locality = listAddress?.get(0)?.locality
+                val address = "$subLocality, $locality"
+                Log.i("Locpref", "Address: $address")
+
+                val listCity = listOf(resultOfCity, address)
+                Log.i("LocPref", "getLastKnownLocation: $listCity")
+                lastKnownLocation.postValue(listCity)
             }
 
             fusedLocationClient.lastLocation.addOnFailureListener { exception ->
