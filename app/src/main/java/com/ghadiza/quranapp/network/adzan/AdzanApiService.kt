@@ -9,7 +9,7 @@ interface AdzanApiService {
         @Path("city") city: String
     ): CityResponse
 
-    @GET("sholat/jadwal{id}/{year}/{month}/{date}")
+    @GET("sholat/jadwal/{id}/{year}/{month}/{date}")
     suspend fun getDailyAdzanTime(
         @Path("id") id: String,
         @Path("year") year: String,
