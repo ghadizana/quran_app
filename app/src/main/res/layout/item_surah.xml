@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-        
+
         <TextView
             android:id="@+id/tv_number"
             android:layout_width="50dp"
@@ -42,7 +42,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:textColor="@color/surface_container"
+            android:textColor="#301A54"
             android:textSize="18sp"
             android:layout_marginTop="4dp"
             android:textStyle="bold"
@@ -55,6 +55,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:textColor="#2B1157"
             android:textStyle="bold"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@id/tv_surah"

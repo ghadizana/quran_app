@@ -57,7 +57,7 @@ class RemoteDataSource(
                 emit(NetworkResponse.Error(e.toString()))
                 Log.e(
                     RemoteDataSource::class.java.simpleName,
-                    "getListCity: " + e.localizedMessage
+                    "getListCity: searchcity" + e.localizedMessage
                 )
             }
         }.flowOn(Dispatchers.IO)

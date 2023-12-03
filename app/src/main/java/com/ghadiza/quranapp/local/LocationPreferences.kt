@@ -11,6 +11,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.util.Locale
 
+@Suppress("DEPRECATION")
 class LocationPreferences(val context: Context) {
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
